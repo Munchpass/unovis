@@ -1,5 +1,46 @@
 import { ConfigProperty, GenericParameter } from '@unovis/shared/integrations/types'
 
+const typeOnlyNames = [
+  'SingleContainerConfigInterface',
+  'XYContainerConfigInterface',
+  'AreaConfigInterface',
+  'AreaConfigInterface',
+  'AxisConfigInterface',
+  'BrushConfigInterface',
+  'CrosshairConfigInterface',
+  'GroupedBarConfigInterface',
+  'LegendConfigInterface',
+  'StackedBarConfigInterface',
+  'ScatterConfigInterface',
+  'TimelineConfigInterface',
+  'XYLabelsConfigInterface',
+  'ChordDiagramConfigInterface',
+  'ChordInputNode',
+  'ChordInputLink',
+  'DonutConfigInterface',
+  'NestedDonutConfigInterface',
+  'GraphConfigInterface',
+  'GraphInputNode',
+  'GraphInputLink',
+  'NumericAccessor',
+  'StringAccessor',
+  'SankeyConfigInterface',
+  'SankeyInputNode',
+  'SankeyInputLink',
+  'TopoJSONMapConfigInterface',
+  'TooltipConfigInterface',
+  'AnnotationsConfigInterface',
+  'AnnotationItem',
+  'LeafletFlowMapConfigInterface',
+  'LeafletMapConfigInterface',
+  'GenericDataRecord',
+  'MapLibreStyleSpecs',
+  'BulletLegendItemInterface',
+  'BulletLegendConfigInterface',
+  'FreeBrushConfigInterface',
+  'LineConfigInterface',
+]
+
 export function getComponentCode(
   componentName: string,
   generics: GenericParameter[] | undefined,
@@ -27,7 +68,9 @@ export function getComponentCode(
 
   return `<script lang="ts">
   // !!! This code was automatically generated. You should not change it !!!
-  ${importStatements.map((s) => `import { ${s.elements.join(', ')} } from '${s.source}'`).join('\n  ')}
+  ${importStatements
+    .map((s) => `import { ${s.elements.map((e) => (typeOnlyNames.includes(e) ? `type ${e}` : e)).join(', ')} } from '${s.source}'`)
+    .join('\n  ')}
   import { onMount${isStandAlone ? '' : ', getContext'} } from 'svelte'
   ${!isStandAlone ? "\n  import type { Lifecycle } from '../../types/context'" : ''}
   import { arePropsEqual } from '../../utils/props'
@@ -49,7 +92,14 @@ export function getComponentCode(
     return () => component?.destroy()
   })
   
-  ${dataType ? '$effect(() => {\n    component?.setData(props.data)\n  })' : ''}
+  ${
+    dataType
+      ? `$effect(() => {
+    component?.setData(props.data)
+    component?._render();
+  })`
+      : ''
+  }
   
   $effect(() => {
     if (!arePropsEqual(prevConfig, config)) {

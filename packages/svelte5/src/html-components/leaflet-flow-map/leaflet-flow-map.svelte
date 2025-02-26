@@ -1,6 +1,6 @@
 <script lang="ts">
   // !!! This code was automatically generated. You should not change it !!!
-  import { LeafletFlowMap, LeafletFlowMapConfigInterface, GenericDataRecord, MapLibreStyleSpecs } from '@unovis/ts'
+  import { LeafletFlowMap, type LeafletFlowMapConfigInterface, type GenericDataRecord, type MapLibreStyleSpecs } from '@unovis/ts'
   import { onMount } from 'svelte'
   
   import { arePropsEqual } from '../../utils/props'
@@ -26,6 +26,7 @@
   
   $effect(() => {
     component?.setData(props.data)
+    component?._render();
   })
   
   $effect(() => {
